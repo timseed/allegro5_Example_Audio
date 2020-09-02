@@ -1,6 +1,5 @@
 obj =  allegro audio2
 CPPFLAGS += -I/usr/local/include
-CPPFLAGS += -g
 LDFLAGS += -L/usr/local/lib
 LDLIBS += -lallegro
 LDLIBS += -lallegro_main
