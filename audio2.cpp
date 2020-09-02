@@ -6,35 +6,42 @@
 #include <unistd.h>
 #include <mutex>          // std::mutex
 #include <cstdio>
+
+#define AUDIO_FILE "/Users/tim/Dev/gpredict-2.2.1//src/audio/leaving.wav"
 std::mutex mtx; //mutex for critical section
 
-int		    play_audio() {
+int play_audio() {
+    mtx.lock();
     if (!al_init()) {
-	return 1;
+        mtx.unlock();
+        return 1;
     }
     if (!al_install_audio()) {
-	return 2;
+        mtx.unlock();
+        return 2;
     }
     if (!al_init_acodec_addon()) {
-	return 3;
+        mtx.unlock();
+        return 3;
     }
     if (!al_reserve_samples(1)) {
-	return 4;
+        mtx.unlock();
+        return 4;
     }
-    ALLEGRO_SAMPLE *idle_sound = al_load_sample("leaving.wav");
+    ALLEGRO_SAMPLE *idle_sound = al_load_sample(AUDIO_FILE);
     ALLEGRO_SAMPLE_INSTANCE *sample_instance = al_create_sample_instance(idle_sound);
     if (!idle_sound || !sample_instance) {
-	printf("Setup error.\n");
-	return 5;
+        printf("Setup error.\n");
+        mtx.unlock();
+        return 5;
     }
     ALLEGRO_SAMPLE_ID sample_id;
 
-    mtx.lock();
     if (!al_play_sample(idle_sound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, &sample_id)) {
-	printf("Failed to play sample.\n");
+        printf("Failed to play sample.\n");
     }
     if (!al_play_sample_instance(sample_instance)) {
-	printf("Failed to play sample instance.\n");
+        printf("Failed to play sample instance.\n");
     }
     al_rest(5.0);
 
@@ -43,25 +50,26 @@ int		    play_audio() {
     std::cout << "Thread I have finished" << std::endl;
     mtx.unlock();
     return 1;
+}
+
+
+int    main   (int argc, char **argv)
+{
+    int		n = 1;
+
+    printf("creating thread\n ");
+    std::thread t_audio(play_audio);
+    sleep(1);
+    while (!mtx.try_lock()) {
+        // Still can not lock this mutex
+        printf("N is %d\n", n);
+        n += 1;
+        sleep(1);
     }
-
-
-    int		    main   (int argc, char **argv){
-	int		n = 1;
-
-	printf("creating thread\n ");
-	std::thread t_audio(play_audio);
-	sleep(1);
-	while (!mtx.try_lock()) {
-		// Still can not lock this mutex
-		    printf("N is %d\n", n);
-		    n += 1;
-		    sleep(1);
-	}
-	// Ha ha ... we locked it - the other code must be done
-	t_audio.join();
-	mtx.unlock();
-	printf("Main closing\n");
-	printf("All done... Closing\n");
-	return (0);
-    }
+    // Ha ha ... we locked it - the other code must be done
+    t_audio.join();
+    mtx.unlock();
+    printf("Main closing\n");
+    printf("All done... Closing\n");
+    return (0);
+}

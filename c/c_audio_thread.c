@@ -6,7 +6,7 @@
 #include <allegro5/allegro_acodec.h>
 #define MAIN_SLEEP 2
 #define THREAD_SLEEP 1
-#define WAV_FILE "/Users/tim/Dev/gpredict-2.2.1/allegro_test/arriving.wav"
+#define AUDIO_FILE  "/Users/tim/Dev/gpredict-2.2.1/allegro_test/arriving.wav"
 
 
 /*
@@ -50,7 +50,7 @@ int   play_audio(void)
         return 4;
     }
     sleep(THREAD_SLEEP);
-    ALLEGRO_SAMPLE *idle_sound = al_load_sample(WAV_FILE);
+    ALLEGRO_SAMPLE *idle_sound = al_load_sample(AUDIO_FILE);
     ALLEGRO_SAMPLE_INSTANCE *sample_instance = al_create_sample_instance(idle_sound);
      if (!idle_sound || !sample_instance) {
         printf("Setup error.\n");
