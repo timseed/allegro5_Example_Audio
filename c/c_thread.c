@@ -4,7 +4,7 @@
 
 void *print_message_function( void *ptr );
 
-main()
+int main()
 {
      pthread_t thread1, thread2;
      char *message1 = "Thread 1";
@@ -25,7 +25,7 @@ main()
 
      printf("Thread 1 returns: %d\n",iret1);
      printf("Thread 2 returns: %d\n",iret2);
-     exit(0);
+     return (0);
 }
 
 void *print_message_function( void *ptr )

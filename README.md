@@ -23,4 +23,4 @@ I have tried as much as possible to keep the code as close to each other as poss
   - join Thread
   - exit
 
-You will have to change the 
+You will have to change the AUDIO_FILE reference, I have not yet got to grips with Cmake enough to allow  
